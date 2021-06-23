@@ -24,5 +24,5 @@ export interface EventsService {
   /**
    * Removes event from the mock-data source by the identifier
    */
-  removeEvent(id: string): Promise<void>;
+  removeEvent(id: string): Promise<string>;
 }
