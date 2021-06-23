@@ -6,22 +6,22 @@ describe('EventsMockService', () => {
   let eventsService: EventsService;
 
   const event = {
-    dateFrom: new Date("2022-12-31T20:00:00").toISOString(), 
-    dateTo: new Date("2022-12-31T21:00:00").toISOString(), 
-    title: "My new Event"
-  }
+    dateFrom: new Date('2022-12-31T20:00:00').toISOString(),
+    dateTo: new Date('2022-12-31T21:00:00').toISOString(),
+    title: 'My new Event',
+  };
 
   const conflictedEvent = {
-    dateFrom: new Date("2021-12-31T18:00:00").toISOString(), 
-    dateTo: new Date("2021-12-31T20:00:00").toISOString(), 
-    title: "Conflicted Event"
-  }
+    dateFrom: new Date('2021-12-31T18:00:00').toISOString(),
+    dateTo: new Date('2021-12-31T20:00:00').toISOString(),
+    title: 'Conflicted Event',
+  };
 
   const conflictedStartTimeEvent = {
-    dateFrom: new Date("2021-12-31T20:00:00").toISOString(), 
-    dateTo: new Date("2021-12-31T22:00:00").toISOString(), 
-    title: "Conflicted Start Time Event"
-  }
+    dateFrom: new Date('2021-12-31T20:00:00').toISOString(),
+    dateTo: new Date('2021-12-31T22:00:00').toISOString(),
+    title: 'Conflicted Start Time Event',
+  };
 
   beforeEach(() => {
     eventsService = new EventsMockService([...EventsMockData]);
@@ -34,50 +34,53 @@ describe('EventsMockService', () => {
     });
 
     it('is creating event ', async () => {
-        const createdEvent = await eventsService.createEvent(event.dateFrom, event.dateTo, event.title);
-        expect(createdEvent.title).toBe(event.title);
-        expect(createdEvent.startDate).toBe(event.dateFrom);
-        expect(createdEvent.endDate).toBe(event.dateTo);
-    })
+      const createdEvent = await eventsService.createEvent(event.dateFrom, event.dateTo, event.title);
+      expect(createdEvent.title).toBe(event.title);
+      expect(createdEvent.startDate).toBe(event.dateFrom);
+      expect(createdEvent.endDate).toBe(event.dateTo);
+    });
 
     it('is not creating event without [title]', async () => {
       try {
         await eventsService.createEvent(event.dateFrom, event.dateTo, null);
       } catch (error) {
-        expect(error.toString()).toBe("Error: Event has not required fields");
+        expect(error.toString()).toBe('Error: Event has not required fields');
       }
-    })
+    });
     it('is not creating event without [dateFrom]', async () => {
       try {
         await eventsService.createEvent(null, event.dateTo, event.title);
       } catch (error) {
-        expect(error.toString()).toBe("Error: Event has not required fields");
+        expect(error.toString()).toBe('Error: Event has not required fields');
       }
-    })
+    });
     it('is not creating event without [dateTo]', async () => {
       try {
         await eventsService.createEvent(event.dateFrom, null, event.title);
       } catch (error) {
-        expect(error.toString()).toBe("Error: Event has not required fields");
+        expect(error.toString()).toBe('Error: Event has not required fields');
       }
-    })
+    });
 
     it('is not creating event because conflicting time [startTime, endTime]', async () => {
       try {
         await eventsService.createEvent(conflictedEvent.dateFrom, conflictedEvent.dateTo, conflictedEvent.title);
       } catch (error) {
-        expect(error.toString()).toBe("Error: Event time is conflicted");
+        expect(error.toString()).toBe('Error: Event time is conflicted');
       }
-    })
-    
-    it('is createing event with the same start time as the previous one\'s end time', async () => {      
-      try {
-        await eventsService.createEvent(conflictedStartTimeEvent.dateFrom, conflictedStartTimeEvent.dateTo, conflictedStartTimeEvent.title);
-      } catch (error) {
-        expect(error.toString()).toBe("Error: Event time is conflicted");
-      }
+    });
 
-    })
+    it("is createing event with the same start time as the previous one's end time", async () => {
+      try {
+        await eventsService.createEvent(
+          conflictedStartTimeEvent.dateFrom,
+          conflictedStartTimeEvent.dateTo,
+          conflictedStartTimeEvent.title,
+        );
+      } catch (error) {
+        expect(error.toString()).toBe('Error: Event time is conflicted');
+      }
+    });
   });
 
   describe('getEvent()', () => {
@@ -92,15 +95,15 @@ describe('EventsMockService', () => {
 
       expect(event.id).toBe(mockedEvent.id);
       expect(event.title).toBe(mockedEvent.title);
-    })
+    });
 
     it('get event by wrong id', async () => {
       try {
-        await eventsService.getEvent("wrongID");
+        await eventsService.getEvent('wrongID');
       } catch (error) {
-        expect(error.toString()).toBe("Error: Event with specified id not found");
+        expect(error.toString()).toBe('Error: Event with specified id not found');
       }
-    })
+    });
   });
 
   describe('getEvents()', () => {
@@ -110,20 +113,34 @@ describe('EventsMockService', () => {
     });
 
     it('get past events ', async () => {
-      const events = await eventsService.getEvents( new Date("2021-01-01").toISOString(), new Date("2021-01-31").toISOString(), 0, 10);
+      const events = await eventsService.getEvents(
+        new Date('2021-01-01').toISOString(),
+        new Date('2021-01-31').toISOString(),
+        0,
+        10,
+      );
       expect(events.totalCount).toBe(10);
-    })
+    });
 
     it('get current events ', async () => {
-      const events = await eventsService.getEvents( new Date("2021-06-23").toISOString(), new Date("2021-06-24").toISOString(), 0, 10);
+      const events = await eventsService.getEvents(
+        new Date('2021-06-23').toISOString(),
+        new Date('2021-06-24').toISOString(),
+        0,
+        10,
+      );
       expect(events.totalCount).toBe(3);
-    })
+    });
 
     it('get future events ', async () => {
-      const events = await eventsService.getEvents( new Date().toISOString(), new Date(`${new Date().getUTCFullYear()+1}`).toISOString(), 0, 10);
+      const events = await eventsService.getEvents(
+        new Date().toISOString(),
+        new Date(`${new Date().getUTCFullYear() + 1}`).toISOString(),
+        0,
+        10,
+      );
       expect(events.totalCount).toBe(10);
-
-    })
+    });
   });
 
   describe('removeEvent()', () => {
@@ -136,14 +153,14 @@ describe('EventsMockService', () => {
       const mockedEvent = EventsMockData[0];
       const removedID = await eventsService.removeEvent(mockedEvent.id);
       expect(removedID).toBe(mockedEvent.id);
-    })
+    });
 
     it('remove event with wronng ID', async () => {
       try {
-        const removedID = await eventsService.removeEvent("wrongID");
+        const removedID = await eventsService.removeEvent('wrongID');
       } catch (error) {
-        expect(error.toString()).toBe("Error: Event with specified id not found");
+        expect(error.toString()).toBe('Error: Event with specified id not found');
       }
-    })
+    });
   });
 });
